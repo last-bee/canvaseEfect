@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			#canvasA,#canvasB{
+				border:1px solid #333;
+				margin-right:20px;
+				width:500px;
+				height: 700px;
+			}
+			#btn{
+				width:100%;
+				text-align: center;
+			}
+			#btn a{
+				margin: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="canvasA"></canvas>
+		<canvas id="canvasB"></canvas>
+		<div id="btn">
+			<a href="javascript: changeEffect()">灰色</a>	
+			<a href="javascript: blackEffect()">黑白</a>	
+			<a href="javascript: backEffect()">反色</a>	
+			<a href="javascript: blurEffect()">模糊</a>	
+			<a href="javascript: dropRed()">青色</a>	
+			<a href="javascript: maEffect()">马赛克</a>	
+		</div>
+	
+	</body>
+	<script type="text/javascript">
+		var canvasA = document.getElementById("canvasA")
+		var canvasB = document.getElementById("canvasB")
+		
+		var contextA = canvasA.getContext('2d')
+		var contextB = canvasB.getContext('2d')
+		
+		var image = new Image()
+		
+		window.onload = function(){
+			image.src = 'img/4.jpg'
+			image.onload = function(){
+				contextA.drawImage(image , 0,0 ,canvasA.width , canvasA.height)
+//				changeEffect()
+			}
+		}
+		
+	
+		function changeEffect(){
+			var  imageData = contextA.getImageData(0,0,canvasA.width,canvasA.height)
+			var pixelData = imageData.data
+			for(var i = 0 ; i<canvasB.width*canvasB.height ; i++){
+				var r = pixelData[i*4 + 0] 
+				var g = pixelData[i*4 + 1] 
+				var b = pixelData[i*4 + 2] 
+				
+				var grey = r*.3 + g*.59 + b*.11
+				
+				pixelData[i*4 + 0] = grey
+				pixelData[i*4 + 1] = grey
+				pixelData[i*4 + 2] = grey
+			}
+			contextB.putImageData(imageData , 0 ,0 ,0 ,0 ,canvasB.width ,canvasB.height)
+		}
+		function blackEffect(){
+			var  imageData = contextA.getImageData(0,0,canvasA.width,canvasA.height)
+			var pixelData = imageData.data
+			for(var i = 0 ; i<canvasB.width*canvasB.height ; i++){
+				var r = pixelData[i*4 + 0] 
+				var g = pixelData[i*4 + 1] 
+				var b = pixelData[i*4 + 2] 
+				
+				var grey = r*.3 + g*.59 + b*.11
+				
+				pixelData[i*4 + 0] = grey > 255/2? 255 : 0
+				pixelData[i*4 + 1] = grey > 255/2? 255 : 0
+				pixelData[i*4 + 2] = grey > 255/2? 255 : 0
+			}
+			contextB.putImageData(imageData , 0 ,0 ,0 ,0 ,canvasB.width ,canvasB.height)
+		}
+		
+		function backEffect(){
+			var  imageData = contextA.getImageData(0,0,canvasA.width,canvasA.height)
+			var pixelData = imageData.data
+			for(var i = 0 ; i<canvasB.width*canvasB.height ; i++){
+				var r = pixelData[i*4 + 0] 
+				var g = pixelData[i*4 + 1] 
+				var b = pixelData[i*4 + 2] 
+				
+				var grey = r*.3 + g*.59 + b*.11
+				
+				pixelData[i*4 + 0] = 255 - r
+				pixelData[i*4 + 1] = 255 - g
+				pixelData[i*4 + 2] = 255 - b
+			}
+			contextB.putImageData(imageData , 0 ,0 ,0 ,0 ,canvasB.width ,canvasB.height)
+		}
+		
+		function blurEffect(){
+			var imageData = contextA.getImageData(0,0,canvasA.width,canvasB.height)
+			var pixelData = imageData.data
+			
+			var imageData1 = contextA.getImageData(0,0,canvasA.width,canvasB.height)
+			var pixelData1 = imageData1.data
+			
+			var blurR = 3
+			var totalNumber = Math.pow((2*3+1),2)
+			for(var i = 0 ; i<canvasA.height-blurR ;i++){
+				for(var j = 0 ;j< canvasA.width-blurR ; j ++){
+					var r = 0, g= 0, b = 0;
+					for(var dx = -blurR ; dx <= blurR;dx++){
+						for(var dy = -blurR ; dy< blurR ;dy ++){
+							var x = i + dx
+							var y = j + dy
+							
+							var p = x*canvasB.width + y
+							r += pixelData[p*4 + 0]
+							g += pixelData[p*4 + 1]
+							b += pixelData[p*4 + 2]
+						}
+						var p = i*canvasB.width + j
+						pixelData1[p*4 + 0] = r/totalNumber
+						pixelData1[p*4 + 1] = g/totalNumber
+						pixelData1[p*4 + 2] = b/totalNumber
+						
+					}
+				
+				
+				}
+			}
+			contextB.putImageData(imageData1 , 0 ,0 ,0 ,0 ,canvasB.width ,canvasB.height)
+		}
+		
+		function dropRed(){
+			var  imageData = contextA.getImageData(0,0,canvasA.width,canvasA.height)
+			var pixelData = imageData.data
+			for(var i = 0 ; i<canvasB.width*canvasB.height ; i++){
+				var r = pixelData[i*4 + 0] 
+				var g = pixelData[i*4 + 1] 
+				var b = pixelData[i*4 + 2] 
+				
+				var grey = r*.3 + g*.59 + b*.11
+				
+				pixelData[i*4 + 0] = r
+				pixelData[i*4 + 1] = 200
+				pixelData[i*4 + 2] = b
+			}
+			contextB.putImageData(imageData , 0 ,0 ,0 ,0 ,canvasB.width ,canvasB.height)
+		}
+		
+		function maEffect(){
+			var imageData = contextA.getImageData(0,0,canvasA.width,canvasB.height)
+			var pixelData = imageData.data
+			
+			var imageData1 = contextA.getImageData(0,0,canvasA.width,canvasB.height)
+			var pixelData1 = imageData1.data
+			
+			
+			var size = 5
+			
+			var totalNumber = Math.pow((size),2)
+			for(var i = 0 ; i<canvasA.height ;i+=size){
+				for(var j = 0 ;j< canvasA.width ; j += size){
+					var r = 0, g= 0, b = 0;
+					for(var dx = 0 ; dx <= size;dx++){
+						for(var dy = 0 ; dy< size ;dy ++){
+							var x = i + dx
+							var y = j + dy
+							
+							var p = x*canvasB.width + y
+							r += pixelData[p*4 + 0]
+							g += pixelData[p*4 + 1]
+							b += pixelData[p*4 + 2]
+						}
+						var p = i*canvasB.width + j
+						var _r = r/totalNumber
+						var _g = g/totalNumber
+						var _b = b/totalNumber
+						
+					}
+					for(var dx = 0 ;dx<size ;dx ++){
+						for(var dy = 0 ;dy<size ;dy ++){
+							var x = i + dx
+							var y = j + dy
+							var p = x*canvasB.width + y
+							pixelData1[p*4 +0 ] = _r
+							pixelData1[p*4 +1] = _g
+							pixelData1[p*4 +2 ] = _b
+						}
+					}
+				
+				}
+			}
+			contextB.putImageData(imageData1 , 0 ,0 ,0 ,0 ,canvasB.width ,canvasB.height)
+		}
+	</script>
+</html>
